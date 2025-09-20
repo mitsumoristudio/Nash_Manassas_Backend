@@ -1,0 +1,6 @@
+@Nash_Manassas_HostAddress = http://localhost:5171
+
+GET {{Nash_Manassas_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
