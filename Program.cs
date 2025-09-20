@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using DotNetEnv;
+using Nash_Manassas.utils;
+using Project_Manassas.Database;
 
 // Load ENV file
 DotNetEnv.Env.Load();
@@ -15,8 +17,38 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 builder.Services.AddAuthorization();
+
+// JWT settings
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+builder.Services.AddAuthentication(option =>
+    {
+        option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+    })
+    .AddJwtBearer(option =>
+    {
+        option.RequireHttpsMetadata = false;
+        option.SaveToken = true;
+        option.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings?.Issuer,
+        
+            ValidateAudience = true,
+            ValidAudience = jwtSettings?.Audience,
+        
+            ValidateLifetime = true,
+        
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings!.SecretKey))
+            // Tells ASP.NET Core ow to validate incoming JWT tokens
+        
+        };
+    });
 
 var authDomainKey = Environment.GetEnvironmentVariable("AUTH0_DOMAIN_KEY");
 var authClientId = Environment.GetEnvironmentVariable("AUTH0_CLIENT_ID");
@@ -51,7 +83,7 @@ builder.Services.AddControllers()
         opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
 
-
+builder.Services.AddApplicationServices();
 
 // Alternative from using extension method to add service scope
  //builder.Services.AddScoped<IProjectService, ProjectService>();
