@@ -62,9 +62,13 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 });
 builder.Services.AddControllersWithViews();
 
-var neonAPIKey = Environment.GetEnvironmentVariable("NEON_API_KEY");
 // Setting up Neon database
-// var connectionString = builder.Configuration.GetConnectionString("NeonConnection");
+var neonAPIKey = Environment.GetEnvironmentVariable("NEON_API_KEY");
+
+builder.Services.AddDbContext<ProjectContext>(options =>
+{
+    options.UseNpgsql(neonAPIKey);
+});
 
 // Add CORS services to container for REACT to call the API on frontend
 builder.Services.AddCors(options =>

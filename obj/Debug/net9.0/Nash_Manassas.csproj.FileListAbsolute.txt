@@ -150,3 +150,4 @@
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/Nash_Manassas.pdb
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/Nash_Manassas.genruntimeconfig.cache
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/ref/Nash_Manassas.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/Nash_Manassas.sourcelink.json
