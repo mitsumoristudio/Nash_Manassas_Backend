@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Nash_Manassas")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8517b94e8c446344e66825ccb5782f5333266e88")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0712a2aa566fb6ade036548b56826f45c6b3262a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Nash_Manassas")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Nash_Manassas")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
