@@ -20,8 +20,6 @@ public class CreateProjectRequest
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
-    public IFormFile? ImageFile { get; set; }
-    
     public Guid UserId { get; set; }
     
 }

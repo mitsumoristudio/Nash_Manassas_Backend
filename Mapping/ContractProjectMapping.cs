@@ -61,7 +61,6 @@ public static class ContractProjectMapping
             Projectname = entity.ProjectName,
             Location = entity.Location,
             Contractor = entity.Contractor,
-            ImageFile = entity.ImageFile?.Url,
             CreatedAt = entity.CreatedAt,
             Projectmanager = entity.ProjectManager,
             Projectestimate = entity.ProjectEstimate,

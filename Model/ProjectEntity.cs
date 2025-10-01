@@ -29,10 +29,6 @@ public class ProjectEntity
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
-    public int? ImageFileId { get; set; }
-    
-    public ImageFileEntity? ImageFile { get; set; }
-    
     public Guid? UserId { get; set; }
     
     public UserEntity? User { get; set; }

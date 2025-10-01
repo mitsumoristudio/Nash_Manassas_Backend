@@ -24,5 +24,4 @@ public class ProjectResponse
     
     public Guid? UserId { get; set; }
     
-    public string? ImageFile { get; set; }
 }

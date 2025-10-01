@@ -34,8 +34,7 @@ public class ProjectService: IProjectService
 
     public async Task<bool> UpdateProjectAsync(Guid id, UpdateProjectRequest request)
     {
-        var project = await _dbContext.Projects
-            .Include(p => p.ImageFile) // include related image
+        var project = await _dbContext.Projects 
             .FirstOrDefaultAsync(p => p.Id == id);
         if (project == null) return false;
         
@@ -64,11 +63,6 @@ public class ProjectService: IProjectService
 
     public async Task<ProjectResponse> CreateProjectAsync(CreateProjectRequest request, string uploadsRootPath)
     {
-        ImageFileEntity? imageFile = null;
-
-        // When a user uploads an image
-        if (request.ImageFile != null && request.ImageFile.Length > 0)
-        {
             var uploadsFolder = Path.Combine(uploadsRootPath, "uploads");
 
             // Create the upload folder if it doesn't exist
@@ -76,30 +70,11 @@ public class ProjectService: IProjectService
             {
                 Directory.CreateDirectory(uploadsFolder);
             }
-
-            // Create Unique file name
-            var fileName = Guid.NewGuid() + Path.GetExtension(request.ImageFile.FileName);
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            // Save file to disk
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await request.ImageFile.CopyToAsync(fileStream);
-            }
-
-            // Save Image metadata to NeonDB
-            imageFile = new ImageFileEntity()
-            {
-                FileName = fileName,
-                Url = $"/uploads/{fileName}"
-            };
-         
-            _dbContext.ImageFiles.Add(imageFile);
-         
+            
             await _dbContext.SaveChangesAsync();
 
             // Save the Changes to the image file
-        }
+        
         var project = ContractProjectMapping.MaptoProjectModel(request);
 
         _dbContext.Projects.Add(project);

@@ -8,8 +8,6 @@ public class ProjectContext(DbContextOptions<ProjectContext> options): DbContext
     public DbSet<ProjectEntity> Projects => Set<ProjectEntity>();
     public DbSet<UserEntity> Users => Set<UserEntity>();
     
-    public DbSet<ImageFileEntity> ImageFiles => Set<ImageFileEntity>();
-
     public DbSet<EquipmentEntity> Equipments => Set<EquipmentEntity>();
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,17 +31,6 @@ public class ProjectContext(DbContextOptions<ProjectContext> options): DbContext
             entity.ToTable("Equipment");
             entity.HasKey(e => e.Id);
         });
-
-        modelBuilder.Entity<ImageFileEntity>(entity =>
-        {
-            entity.ToTable("ImageFile");
-            entity.HasKey(e => e.Id);
-        });
-        modelBuilder.Entity<ProjectEntity>()
-            .HasOne(p => p.ImageFile)
-            .WithMany(i  => i.Projects)
-            .HasForeignKey(p => p.ImageFileId)
-            .IsRequired(false);
         
         modelBuilder.Entity<ProjectEntity>()
             .HasOne(p => p.User)
