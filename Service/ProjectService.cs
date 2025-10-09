@@ -89,4 +89,14 @@ public class ProjectService: IProjectService
         return await projects;
         
     }
+
+    public async Task<ProjectResponse?> GetProjectByNameAsync(string projectName)
+    {
+        // Convert lower case for case-insensitive comparison
+        var project = await _dbContext.Projects
+            .AsQueryable()
+            .FirstOrDefaultAsync(p => EF.Functions.Like(p.ProjectName.ToLower(), projectName.ToLower()));
+        
+        return (project is null ? null : ContractProjectMapping.MaptoProjectResponse(project));
+    }
 }

@@ -17,7 +17,9 @@ public interface IProjectService
     Task<ProjectResponse> CreateProjectAsync(CreateProjectRequest request, string uploadsRootPath);
     
     Task<List<ProjectEntity>> GetProjectsByUserIdAsync(Guid userId);
-    
+
+    Task<ProjectResponse?> GetProjectByNameAsync(string projectName);
+
 }
 
 /*

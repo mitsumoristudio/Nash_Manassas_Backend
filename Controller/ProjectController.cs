@@ -76,4 +76,18 @@ public class ProjectController:  ControllerBase
    return Ok(project);
   }
   
+  // GET/ SEARCH BY Project Name
+  [HttpGet(ApiEndPoints.Projects.SEARCH_BY_NAME)]
+  public async Task<ActionResult<ProjectResponse>> GetProjectByNameAsync([FromQuery] string projectName)
+  {
+      if (string.IsNullOrWhiteSpace(projectName))
+          return BadRequest("Project name is required.");
+      
+      var project = await _projectService.GetProjectByNameAsync(projectName);
+      
+      if (project == null)
+          return NotFound(new { message = $"No project found with name '{projectName}'" });
+      
+      return Ok(project);
+  }
 }
