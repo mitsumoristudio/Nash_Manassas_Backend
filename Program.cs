@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using DotNetEnv;
+using Microsoft.AspNetCore.Diagnostics;
 using Nash_Manassas.utils;
 using Project_Manassas.Database;
 
@@ -50,6 +51,8 @@ builder.Services.AddAuthentication(option =>
         };
     });
 
+
+
 var authDomainKey = Environment.GetEnvironmentVariable("AUTH0_DOMAIN_KEY");
 var authClientId = Environment.GetEnvironmentVariable("AUTH0_CLIENT_ID");
 var authClientSecret = Environment.GetEnvironmentVariable("AUTH0_CLIENT_SECRET");
@@ -94,6 +97,31 @@ builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 // This order matters for authentication to work
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            var feature = context.Features.Get<IExceptionHandlerPathFeature>();
+            var ex = feature?.Error;
+            Console.Error.WriteLine(ex?.ToString());
+            context.Response.StatusCode = 500;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                Message = "Internal server error",
+                Error = ex?.Message,
+                StackTrace = ex?.StackTrace
+            });
+        });
+    });
+}
+else
+{
+    app.UseDeveloperExceptionPage();
+}
+
 app.UseRouting();
 
 app.UseCors("DevCorsPolicy");
@@ -116,7 +144,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/health", () => "OK");
+app.MapGet("/", () => "Hello User");
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{port}");
 
 app.Run();
 

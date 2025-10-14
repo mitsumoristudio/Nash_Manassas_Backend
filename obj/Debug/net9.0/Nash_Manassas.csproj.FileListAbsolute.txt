@@ -136,6 +136,7 @@
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/Nash_Manassas.csproj.CoreCompileInputs.cache
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/Nash_Manassas.MvcApplicationPartsAssemblyInfo.cs
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/Nash_Manassas.MvcApplicationPartsAssemblyInfo.cache
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/Nash_Manassas.sourcelink.json
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/rjimswa.dswa.cache.json
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/rjsmrazor.dswa.cache.json
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/rjsmcshtml.dswa.cache.json
@@ -150,4 +151,9 @@
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/Nash_Manassas.pdb
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/Nash_Manassas.genruntimeconfig.cache
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/ref/Nash_Manassas.dll
-/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/obj/Debug/net9.0/Nash_Manassas.sourcelink.json
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/publish/web.config
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/publish/appsettings.Development.json
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/publish/appsettings.json
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/publish/Nash_Manassas.deps.json
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/publish/Nash_Manassas.runtimeconfig.json
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/publish/Nash_Manassas.staticwebassets.endpoints.json
