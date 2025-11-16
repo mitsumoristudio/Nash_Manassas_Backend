@@ -39,10 +39,13 @@ public class ApiEndPoints
         public const string DELETE_URL_USER_CONSTANT = $"{{id:guid}}";
 
         public const string UPDATE_URL_USER_CONSTANT = $"{{id:guid}}";
-
-
-
+        
         public const string LOGOUT_URL_USER_CONSTANT = $"logout";
+    }
+
+    public static class MCP
+    {
+        public const string Base = $"{ApiBase}/mcp";
     }
 
     public static class Equipments

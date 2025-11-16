@@ -157,3 +157,12 @@
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/publish/Nash_Manassas.deps.json
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/publish/Nash_Manassas.runtimeconfig.json
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/publish/Nash_Manassas.staticwebassets.endpoints.json
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/Microsoft.Extensions.AI.Abstractions.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/Microsoft.Extensions.Diagnostics.Abstractions.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/Microsoft.Extensions.FileProviders.Abstractions.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/Microsoft.Extensions.Hosting.Abstractions.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/ModelContextProtocol.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/ModelContextProtocol.Core.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/System.Net.ServerSentEvents.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/Newtonsoft.Json.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/System.Net.WebSockets.WebSocketProtocol.dll

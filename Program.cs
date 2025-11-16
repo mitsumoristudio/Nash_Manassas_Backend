@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -7,20 +8,36 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Diagnostics;
 using Nash_Manassas.utils;
 using Project_Manassas.Database;
+using Project_Manassas.Service;
+using ModelContextProtocol.Server;
+using Nash_Manassas.Hub;
+
 
 // Load ENV file
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// -------------------------
+// Swagger
+// -------------------------
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddAuthorization();
 
-// JWT settings
+// -------------------------
+// SignalR implementation
+// -------------------------
+builder.Services.AddSignalR()
+    .AddJsonProtocol(opts =>
+    {
+        opts.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
+
+// -------------------------
+// JWT authentication
+// -------------------------
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
@@ -50,7 +67,6 @@ builder.Services.AddAuthentication(option =>
         
         };
     });
-
 
 
 var authDomainKey = Environment.GetEnvironmentVariable("AUTH0_DOMAIN_KEY");
@@ -84,13 +100,33 @@ builder.Services.AddCors(options =>
     );
 });
 
+
+// -------------------------
+// Add MCP service from MCP server
+// -------------------------
+// Added dotnet add package ModelContextProtocol --version 0.4.0-preview.3
+builder.Services.AddHttpClient<McpBridgeService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5001/"); // MCP server URL
+});
+
+// Adding McpConnection
+builder.Services.AddScoped<IMcpConnectionService, McpConnectService>();
+
+// Add McpChatService
+builder.Services.AddSingleton<McpChatService>();
+
+// Adding Controller for MVC pattern
 builder.Services.AddControllers()
     .AddJsonOptions(opts =>
     {
         opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     });
 
 builder.Services.AddApplicationServices();
+
+
 
 // Alternative from using extension method to add service scope
  //builder.Services.AddScoped<IProjectService, ProjectService>();
@@ -122,6 +158,8 @@ else
     app.UseDeveloperExceptionPage();
 }
 
+app.MapHub<ProjectHub>("/projectHub");
+
 app.UseRouting();
 
 app.UseCors("DevCorsPolicy");
@@ -131,6 +169,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

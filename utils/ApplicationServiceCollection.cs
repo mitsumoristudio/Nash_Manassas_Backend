@@ -10,6 +10,7 @@ public static class ApplicationServiceCollection
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IEquipmentService, EquipmentService>();
         
+        
         return services;
     }
 }

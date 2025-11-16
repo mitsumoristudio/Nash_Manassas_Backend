@@ -72,7 +72,8 @@ public class ProjectController:  ControllerBase
   [HttpPost]
   public async Task<IActionResult> CreateProjectAsync([FromBody] CreateProjectRequest request)
   {
-   var project = await _projectService.CreateProjectAsync(request, _environment.WebRootPath);
+  // var project = await _projectService.CreateProjectAsync(request, _environment.WebRootPath);
+  var project = await _projectService.CreateProjectAsync(request, _environment.ContentRootPath);
    return Ok(project);
   }
   
