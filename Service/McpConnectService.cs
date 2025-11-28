@@ -18,6 +18,9 @@ public class McpConnectService: IMcpConnectionService
     {
         var rpc = await _mcpBridgeService.SendQueryAsync(" list_projects_async");
 
+        if (rpc.Content.Count == 0 || rpc.Content.First().Json == null)
+            return new List<ProjectResponse>();
+        
         var jsonPayload = rpc.Content.First().Json;
         
         return JsonSerializer.Deserialize<List<ProjectResponse>>(jsonPayload.ToString())!;
@@ -27,6 +30,9 @@ public class McpConnectService: IMcpConnectionService
     public async Task<List<ProjectResponse>> FindProjectbyName(string name)
     {
         var rpc = await _mcpBridgeService.SendQueryAsync("find_project_by_name_async", new { name });
+        
+        if (rpc.Content.Count == 0 || rpc.Content.First().Json == null)
+            return new List<ProjectResponse>();
 
         var jsonPayload = rpc.Content.First().Json;
 
@@ -36,7 +42,8 @@ public class McpConnectService: IMcpConnectionService
     
     public async Task<ProjectResponse> CreateProjectAsync(CreateProjectRequest request)
     {
-       var rpc = await _mcpBridgeService.SendQueryAsync(" create_project_async", request);
+       var rpc = await _mcpBridgeService.SendQueryAsync("create_project_async", request);
+       
        
        var jsonPayload = rpc.Content.First().Json;
        

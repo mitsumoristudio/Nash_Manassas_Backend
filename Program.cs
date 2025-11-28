@@ -10,6 +10,7 @@ using Nash_Manassas.utils;
 using Project_Manassas.Database;
 using Project_Manassas.Service;
 using ModelContextProtocol.Server;
+using Nash_Manassas.Controller;
 using Nash_Manassas.Hub;
 
 
@@ -89,6 +90,8 @@ builder.Services.AddDbContext<ProjectContext>(options =>
     options.UseNpgsql(neonAPIKey);
 });
 
+
+
 // Add CORS services to container for REACT to call the API on frontend
 builder.Services.AddCors(options =>
 {
@@ -97,6 +100,7 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
+            .SetIsOriginAllowed(_ => true)
     );
 });
 
@@ -105,16 +109,16 @@ builder.Services.AddCors(options =>
 // Add MCP service from MCP server
 // -------------------------
 // Added dotnet add package ModelContextProtocol --version 0.4.0-preview.3
-builder.Services.AddHttpClient<McpBridgeService>(client =>
-{
-    client.BaseAddress = new Uri("http://localhost:5001/"); // MCP server URL
-});
-
-// Adding McpConnection
-builder.Services.AddScoped<IMcpConnectionService, McpConnectService>();
-
-// Add McpChatService
-builder.Services.AddSingleton<McpChatService>();
+// builder.Services.AddHttpClient<McpBridgeService>(client =>
+// {
+//     client.BaseAddress = new Uri("http://localhost:5001/mcp"); // MCP server URL
+// });
+//
+// // Adding McpConnection
+// builder.Services.AddScoped<IMcpConnectionService, McpConnectService>();
+//
+// // Add McpChatService
+// builder.Services.AddSingleton<McpChatService>();
 
 // Adding Controller for MVC pattern
 builder.Services.AddControllers()
@@ -126,7 +130,13 @@ builder.Services.AddControllers()
 
 builder.Services.AddApplicationServices();
 
+// ADD ProjectApiClients
+builder.Services.AddHttpClient<ProjectApiClients>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:5000/");
+});
 
+builder.Services.AddScoped<RpcController>();
 
 // Alternative from using extension method to add service scope
  //builder.Services.AddScoped<IProjectService, ProjectService>();
@@ -158,7 +168,9 @@ else
     app.UseDeveloperExceptionPage();
 }
 
-app.MapHub<ProjectHub>("/projectHub");
+
+// WebSocket
+app.UseWebSockets();
 
 app.UseRouting();
 
@@ -168,13 +180,15 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+
+
+// SignalR Hubs
+app.MapHub<ProjectHub>("/projecthub");
+
+// Controller
 app.MapControllers();
 
-
-
-
-
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline. Use Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -186,11 +200,29 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+// Test endpoint
 app.MapGet("/health", () => "OK");
 app.MapGet("/", () => "Hello User");
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Urls.Add($"http://*:{port}");
+// var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+// app.Urls.Add($"http://*:{port}");
 
 app.Run();
 
+/*
+ * curl -X POST http://localhost:5000/api/rpc \
+   -H "Content-Type: application/json" \
+   -d '{"jsonrpc":"2.0","id":"1","method":"list_projects","params":{}}'
+   
+   
+   curl -X POST http://localhost:5000/api/rpc \
+   -H "Content-Type: application/json" \
+   -d '{
+     "jsonrpc": "2.0",
+     "id": "1",
+     "method": "find_project",
+     "params": { "projectName": "CDC Building Project" }
+   }'
+
+
+*/

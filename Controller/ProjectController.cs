@@ -18,11 +18,13 @@ public class ProjectController:  ControllerBase
 {
     private readonly IProjectService _projectService;
     private readonly IWebHostEnvironment _environment;
+  //  private readonly IMcpConnectionService _mcpConnectionService;
 
-    public ProjectController(IProjectService projectservice, IWebHostEnvironment environment)
+    public ProjectController(IProjectService projectservice, IWebHostEnvironment environment )
     {
       _projectService = projectservice;
       _environment = environment;
+          //   _mcpConnectionService = mcpConnectionService;
     }
     
     // GET/ api/products

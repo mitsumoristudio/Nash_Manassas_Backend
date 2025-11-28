@@ -4,7 +4,7 @@ namespace Project_Manassas.Dto.Responses;
 
 public class ProjectResponse
 {
-    public required Guid Id { get; set; }
+    public required Guid? Id { get; set; }
     
     public required string ProjectName { get; set; }
     

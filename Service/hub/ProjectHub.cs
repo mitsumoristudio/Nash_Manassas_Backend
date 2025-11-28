@@ -1,69 +1,182 @@
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
+using Project_Manassas.Dto.Requests;
+using Project_Manassas.Dto.Responses;
+using Project_Manassas.Service;
 
 namespace Nash_Manassas.Hub
 {
     public class ProjectHub : Microsoft.AspNetCore.SignalR.Hub
     {
-        /// <summary>
-        /// Called by React chat to send a user message.
-        /// Backend then forwards to MCP Chat Service.
-        /// </summary>
-        public async Task SendMessage(string user, string message)
+        private readonly IMcpConnectionService _mcpService;
+
+        public ProjectHub(IMcpConnectionService mcpConnectionService)
         {
-            // Broadcast to all clients (UI echo)
-            await Clients.All.SendAsync("userMessage", new
+            _mcpService = mcpConnectionService;
+        }
+
+        public async Task SendChatMessage(string user, string message)
+        {
+            message = message.Trim().ToLower();
+
+            // Notify client typing started
+            await SafeSendAsync("ReceiveTyping", true);
+
+            try
             {
-                user,
-                text = message,
-                timestamp = DateTime.UtcNow
-            });
+                if (message.Contains("list all projects") || message.Contains("show me all projects"))
+                {
+                    var projects = await SafeGetAllProjectsAsync();
+                    var text = projects.Count > 0
+                        ? string.Join("\n", projects.Select(p => $"{p.ProjectNumber} - {p.ProjectName}"))
+                        : "No projects found.";
 
-            // Instead of calling MCP here directly,
-            // use a backend service injected outside the Hub.
-            //
-            // Example:
-            // await _mcpChatService.SendChatMessageAsync(message);
+                    await SafeSendAsync("ReceiveChatMessage", new { user = "assistant", text });
+                }
+                else if (message.Contains("find project") || message.Contains("show project"))
+                {
+                    var projectName = ExtractProjectName(message);
+                    if (string.IsNullOrEmpty(projectName))
+                    {
+                        await SafeSendAsync("ReceiveChatMessage", new
+                        {
+                            user = "assistant",
+                            text = "Please specify the project name, e.g., 'Find project called Demo'."
+                        });
+                    }
+                    else
+                    {
+                        var projects = await SafeFindProjectByNameAsync(projectName);
+                        if (projects.Count == 0)
+                        {
+                            await SafeSendAsync("ReceiveChatMessage", new
+                            {
+                                user = "assistant",
+                                text = $"Project '{projectName}' not found."
+                            });
+                        }
+                        else
+                        {
+                            var project = projects.First();
+                            await SafeSendAsync("ReceiveChatMessage", new
+                            {
+                                user = "assistant",
+                                text = $"{project.ProjectNumber} - {project.ProjectName}"
+                            });
+                        }
+                    }
+                }
+                else if (message.Contains("create project"))
+                {
+                    try
+                    {
+                        var jsonStart = message.IndexOf("{");
+                        if (jsonStart == -1)
+                            throw new Exception("Please provide project details as JSON.");
+
+                        var json = message.Substring(jsonStart);
+                        var request = System.Text.Json.JsonSerializer.Deserialize<CreateProjectRequest>(json);
+                        var project = await SafeCreateProjectAsync(request);
+
+                        await SafeSendAsync("ReceiveChatMessage", new
+                        {
+                            user = "assistant",
+                            text = $"Project created: {project.ProjectNumber} - {project.ProjectName}"
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        await SafeSendAsync("ReceiveChatMessage", new
+                        {
+                            user = "assistant",
+                            text = $"Error creating project: {ex.Message}"
+                        });
+                    }
+                }
+                else
+                {
+                    await SafeSendAsync("ReceiveChatMessage", new
+                    {
+                        user = "assistant",
+                        text = "Sorry, I didn't understand that. Try 'List all projects' or 'Find project called Demo'."
+                    });
+                }
+            }
+            finally
+            {
+                // Notify client typing ended
+                await SafeSendAsync("ReceiveTyping", false);
+            }
         }
 
-        /// <summary>
-        /// Helper for backend to push text messages (from MCP).
-        /// </summary>
-        public async Task BroadcastChatMessage(object payload)
+        #region Helper Methods
+
+        private async Task SafeSendAsync(string method, object message)
         {
-            await Clients.All.SendAsync("chatMessage", payload);
+            try
+            {
+                await Clients.Caller.SendAsync(method, message);
+            }
+            catch
+            {
+                // Ignore failures to avoid breaking SignalR connection
+            }
         }
 
-        /// <summary>
-        /// Helper for backend to push streaming token chunks.
-        /// </summary>
-        public async Task BroadcastChatToken(string token)
+        private async Task<List<ProjectResponse>> SafeGetAllProjectsAsync()
         {
-            await Clients.All.SendAsync("chatToken", token);
+            try
+            {
+                return await _mcpService.GetAllProjectsAsync();
+            }
+            catch
+            {
+                return new List<ProjectResponse>();
+            }
         }
 
-        /// <summary>
-        /// Helper for backend to push project list results.
-        /// </summary>
-        public async Task BroadcastProjectList(object data)
+        private async Task<List<ProjectResponse>> SafeFindProjectByNameAsync(string name)
         {
-            await Clients.All.SendAsync("listProjects", data);
+            try
+            {
+                return await _mcpService.FindProjectbyName(name);
+            }
+            catch
+            {
+                return new List<ProjectResponse>();
+            }
         }
 
-        /// <summary>
-        /// Helper for backend to push “find project” results.
-        /// </summary>
-        public async Task BroadcastFindProject(object data)
+        private async Task<ProjectResponse> SafeCreateProjectAsync(CreateProjectRequest request)
         {
-            await Clients.All.SendAsync("findProject", data);
+            try
+            {
+                return await _mcpService.CreateProjectAsync(request);
+            }
+            catch
+            {
+                return new ProjectResponse
+                {
+                    ProjectName = request.ProjectName,
+                    ProjectNumber = request.ProjectNumber,
+                    Id = request.UserId,
+                    Description = request.Description,
+                    Location = request.Location,
+                    ProjectEstimate = request.ProjectEstimate,
+                    ProjectManager = request.ProjectManager,
+                };
+            }
         }
 
-        /// <summary>
-        /// Helper for backend to push create project results.
-        /// </summary>
-        public async Task BroadcastCreateProject(object data)
+        private string? ExtractProjectName(string message)
         {
-            await Clients.All.SendAsync("createProject", data);
+            var words = message.Split(" ");
+            var idx = Array.FindIndex(words, w => w == "called" || w == "named");
+            if (idx >= 0 && idx + 1 < words.Length)
+                return words[idx + 1];
+            return null;
         }
+
+        #endregion
     }
 }

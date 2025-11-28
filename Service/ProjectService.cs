@@ -22,7 +22,8 @@ public class ProjectService: IProjectService
 
         return new ProjectsResponse
         {
-            Items = projects.Select(p => ContractProjectMapping.MaptoProjectResponse(p))
+            Items = projects.Select((p) => ContractProjectMapping.MaptoProjectResponse(p))
+           // Items = projects.Select(p => ContractProjectMapping.MaptoProjectResponse(p))
         };
     }
 
