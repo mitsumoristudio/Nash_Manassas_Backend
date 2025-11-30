@@ -36,9 +36,13 @@ public class RpcController: ControllerBase
                     // return Ok(JsonRpcResponse.Ok(req.Id, result));
                 
                 case "create_project":
-                    var request = JsonSerializer.Deserialize<CreateProjectRequest>(req.Params.ToString());
-                    var created = await _projectClient.CreateProjectAsync(request!);
-                    return Ok(JsonRpcResponse.Ok(req.Id, created));
+                    return await HandleCreateProject(req);
+                 // var request = req.Params?.Deserialize<CreateProjectRequest>();
+                 // if (request == null)
+                 //     return Ok(JsonRpcResponse.Error(req.Id, -32602, "Invalid params"));
+                 //
+                 // var created = await _projectClient.CreateProjectAsync(request);
+                 // return Ok(JsonRpcResponse.Ok(req.Id, created));
 
                 default:
                     return Ok(JsonRpcResponse.Error(req.Id, -32601, "Method not found"));
@@ -75,7 +79,22 @@ public class RpcController: ControllerBase
         return Ok(JsonRpcResponse.Ok(req.Id, result));
     }
 
+    private async Task<IActionResult> HandleCreateProject(JsonRpcRequest req)
+    {
+        if (req.Params == null || req.Params.Value.ValueKind != JsonValueKind.Object)
+        {
+            return Ok(JsonRpcResponse.Error(req.Id, -32602, "Missing or invalid params"));
+        }
+        
+        if (req == null) 
+            return Ok(JsonRpcResponse.Error(req.Id, -32602, "Missing required param"));
 
+        var request = req.Params.Value.Deserialize<CreateProjectRequest>();
+
+        var created = await _projectClient.CreateProjectAsync(request);
+        
+        return Ok(JsonRpcResponse.Ok(req.Id, created));
+    }
    
     private async Task<IActionResult> HandleListProjects(JsonRpcRequest req)
     {

@@ -45,17 +45,14 @@ public class ProjectApiClients
         // Deserialize as list
         var projects = JsonSerializer.Deserialize<ProjectResponse>(json, _jsonOptions);
         
-        // Return first match
+        // Return project
         return projects;
         
-        
-        // var project = JsonSerializer.Deserialize<ProjectResponse>(json, _jsonOptions);
-        // Debug.Assert(project != null, nameof(project) + " != null");
-        // return project;
     }
 
     public async Task<ProjectEntity> CreateProjectAsync(CreateProjectRequest request)
     {
+      
         var newProject = new ProjectEntity
         {
             Id = Guid.NewGuid(),
@@ -68,7 +65,7 @@ public class ProjectApiClients
             ProjectManager = request.ProjectManager,
         };
         var jsonContent = new StringContent(JsonSerializer.Serialize(newProject, _jsonOptions), System.Text.Encoding.UTF8, "application/json");
-        var response = await _httpClient.PostAsync(_httpClient.BaseAddress, jsonContent);
+        var response = await _httpClient.PostAsync("api/projects", jsonContent);
         response.EnsureSuccessStatusCode();
 
         var responseString = await response.Content.ReadAsStringAsync();

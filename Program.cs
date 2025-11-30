@@ -128,6 +128,13 @@ builder.Services.AddControllers()
         opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     });
 
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+});
+
 builder.Services.AddApplicationServices();
 
 // ADD ProjectApiClients
@@ -223,6 +230,21 @@ app.Run();
      "method": "find_project",
      "params": { "projectName": "CDC Building Project" }
    }'
+   
+      curl -X POST http://localhost:5000/api/rpc \
+   -H "Content-Type: application/json" \
+   -d '{"jsonrpc":"2.0","id":"1","method":"create_project","params":{
+       "id":"502299a-8e46-414e-8e08-5b8897a260df",
+       "projectName":"Vanderbilt medical center garage parking",
+       "description":"Vanderbilt student housing",
+       "projectNumber":"1290033",
+       "location":"Nashville, TN",
+       "contractor":"Edward Kayan",
+       "projectEstimate":423000,
+       "projectManager":"Mia Mitsumori",
+       "createdAt":"2025-11-27T00:00:00Z",
+       "userId":"cbda9ada-33d0-4dbe-a219-b17de1fba61e"
+   }}'
 
 
 */
