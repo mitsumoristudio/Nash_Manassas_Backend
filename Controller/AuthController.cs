@@ -20,10 +20,14 @@ namespace Project_Manassas.Controller;
 public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly ProjectContext _dbContext;
+    private readonly SendGridEmailService _emailSenderService;
 
-    public AuthController(IUserService userService)
+    public AuthController(IUserService userService, ProjectContext dbContext, SendGridEmailService emailSenderService)
     {
         _userService = userService;
+        _dbContext = dbContext;
+        _emailSenderService = emailSenderService;
     }
     
     // POST/ api/users/register
@@ -98,5 +102,68 @@ public class AuthController : ControllerBase
     {
         var user = await _userService.GetUserAsync(id);
         return user is null ? NotFound("User was not found") : Ok(user);
+    }
+    
+    // POST /api/users/verify-email
+    [HttpPost("verifyEmail")]
+    public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+    {
+        var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.EmailVerificationToken == token);
+
+        if (user == null || user.EmailVerificationTokenExpiration < DateTime.UtcNow)
+        {
+            return BadRequest("Invaid or Expired Token");
+        }
+
+        user.EmailConfirmed = true;
+        user.EmailVerificationToken = null;
+        user.EmailVerificationTokenExpiration = null;
+        
+        await _dbContext.SaveChangesAsync();
+        return Ok("Email verified successfully");
+    }
+    
+    // POST /api/users/forgotPassword
+    [HttpPost("forgotPassword")]
+    public async Task<IActionResult> ForgotPassword([FromBody] string email)
+    {
+        var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
+        if (user == null) return BadRequest("User was not found.");
+        
+        user.PasswordResetToken = Guid.NewGuid().ToString();
+        user.PasswordResetTokenExpiration = DateTime.UtcNow.AddMinutes(30);
+        
+        await _dbContext.SaveChangesAsync();
+        
+        var resetUrl =  $"https://morisolution.org/resetPassword?token={user.PasswordResetToken}";
+        
+        await _emailSenderService.SendEmailAsync(
+            email,
+            "Reset Your Password",
+            $"Click here to reset your password: <a href='{resetUrl}'>Reset Password</a>"
+        );
+        
+        return Ok("Password reset email sent");
+    }
+    
+    
+    // POST /api/users/resetPassword
+    [HttpPost("resetPassword")]
+    public async Task<IActionResult> ResetPasswordAsync(string token, string newPassword)
+    {
+        var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.PasswordResetToken == token);
+
+        if (user == null || user.PasswordResetTokenExpiration < DateTime.UtcNow)
+        {
+            return BadRequest("Invaid or Expired Token");
+        }
+        
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        user.PasswordResetToken = null;
+        user.PasswordResetTokenExpiration = null;
+
+        await _dbContext.SaveChangesAsync();
+        
+        return Ok("Successfully reset password");
     }
 }

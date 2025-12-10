@@ -36,10 +36,12 @@ public class ApiEndPoints
         public const string DELETE_URL_USER_CONSTANT = $"{{id:guid}}";
         
         public const string UPDATE_URL_USER_CONSTANT = $"{{id:guid}}";
-
-       
         
         public const string LOGOUT_URL_USER_CONSTANT = $"logout";
+
+        public const string VERIFY_EMAIL = $"verifyEmail";
+        
+        public const string FORGOT_PASSWORD = $"forgotPassword";
     }
     
     public static class Equipments
