@@ -12,6 +12,8 @@ using Project_Manassas.Service;
 using ModelContextProtocol.Server;
 using Nash_Manassas.Controller;
 using Nash_Manassas.Hub;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 
 // Load ENV file
@@ -35,6 +37,22 @@ builder.Services.AddSignalR()
     {
         opts.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     });
+
+// -------------------------
+    // SendGrid Email Implementation
+        // -------------------------
+        // var sendGridApiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+        // var sendGridClient = new SendGridClient(sendGridApiKey);
+        // var message = new SendGridMessage()
+        // {
+        //     From = new EmailAddress("mitsumori@nashmanassas.org", "DX Team"),
+        //     Subject = "Sending with Twilio. Confirm third email as sent ",
+        //     PlainTextContent = "email implementation is not easy",
+        //     HtmlContent = "<strong>and easy to do anywhere, even with C#</strong>"
+        // };
+        // message.AddTo(new EmailAddress("runprospectpark@gmail.com", "Testing SendGrid User"));
+        // var response = await sendGridClient.SendEmailAsync(message).ConfigureAwait(false);
+
 
 // -------------------------
 // JWT authentication

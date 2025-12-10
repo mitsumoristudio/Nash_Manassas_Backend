@@ -11,6 +11,7 @@ public static class ApplicationServiceCollection
         services.AddScoped<IEquipmentService, EquipmentService>();
         services.AddScoped<IEmailSenderService, SendGridEmailService>();
         
+        
         return services;
     }
 }

@@ -166,3 +166,6 @@
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/System.Net.ServerSentEvents.dll
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/Newtonsoft.Json.dll
 /Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/System.Net.WebSockets.WebSocketProtocol.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/SendGrid.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/SendGrid.Extensions.DependencyInjection.dll
+/Users/satoshimitsumori/RiderProjects/Nash_Manassas/Nash_Manassas/bin/Debug/net9.0/StarkbankEcdsa.dll

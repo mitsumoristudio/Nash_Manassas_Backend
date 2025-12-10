@@ -26,6 +26,17 @@ public class ApiEndPoints
         private const string user = "user";
     }
 
+    public static class Messages
+    {
+        public const string Base = $"{ApiBase}/message";
+        
+        public const string CREATE_URL_MESSAGE = $"sendEmail";
+        
+        public const string SEND_CONTACT_MESSAGE = $"sendContactMessage";
+        
+        public const string SEND_VERIFICATION_EMAIL = $"sendVerificationEmail";
+    }
+
     public static class Users
     {
         public const string Base = $"{ApiBase}/users";
