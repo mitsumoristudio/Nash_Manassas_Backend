@@ -34,9 +34,13 @@ public class EmailVerificationService : IEmailVerificationService
         await _dbContext.VerificationCodes.AddAsync(newEntity);
         await _dbContext.SaveChangesAsync();
         
-        var subject = "Your Verification Code";
-        var body = $"Your verification code is: {random6Number}\n\nIt expires in 10 minutes.";
+       //    var verifyUrl = $"https://morisolution.org/verifyEmail?token={random6Number}";
+         var verifyUrl = $"http://localhost:3000/verifyEmail";       
         
+        var subject = "Your Verification Code";
+        var body = $"Your verification code is: {random6Number}\n\nIt expires in 10 minutes." +
+                         $"Click the link to verify your email: <a href='{verifyUrl}'>Verify</a>";
+     
         await _emailSenderService.SendEmailAsync(email, subject, body);
     }
 

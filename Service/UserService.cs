@@ -138,13 +138,13 @@ public class UserService : IUserService
       await _dbContext.SaveChangesAsync();
       
       // Come back to it later
-      var verifyUrl = $"https://morisolution.org/verifyEmail?token={verificationToken}";
+      // var verifyUrl = $"https://morisolution.org/verifyEmail?token={verificationToken}";
       
-      await _emailSender.SendEmailAsync(
-         newUser.Email,
-         "Verify your email",
-         $"Click the link to verify your email: <a href='{verifyUrl}'>Verify</a>"
-      );
+      // await _emailSender.SendEmailAsync(
+      //    newUser.Email,
+      //    "Verify your email",
+      //    $"Click the link to verify your email: <a href='{verifyUrl}'>Verify</a>"
+      // );
 
       return new RegistrationResponse
       {

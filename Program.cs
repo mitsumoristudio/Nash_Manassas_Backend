@@ -163,6 +163,9 @@ builder.Services.AddHttpClient<ProjectApiClients>(client =>
 
 builder.Services.AddScoped<RpcController>();
 
+// Authentication Email Sevice
+builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+
 // ADD SendGrid Service
 builder.Services.AddScoped<IEmailSenderService, SendGridEmailService>();
 

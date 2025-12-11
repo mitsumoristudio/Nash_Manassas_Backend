@@ -52,8 +52,10 @@ public class AuthController : ControllerBase
         if (createUser == null) return BadRequest("Email is already in use.");
         
         // Send verification code
+      
         await _emailVerificationService.SendVerificationCode(user.Email);
         
+       
         return Ok(new { message = "User created successfully. Verification email has been sent." });
         //return Ok(createUser);
     }
