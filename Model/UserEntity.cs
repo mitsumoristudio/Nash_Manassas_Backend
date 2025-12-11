@@ -1,5 +1,8 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Project_Manassas.Model;
 
+[Table("Users")]
 public class UserEntity
 {
     public required string UserName { get; set; }

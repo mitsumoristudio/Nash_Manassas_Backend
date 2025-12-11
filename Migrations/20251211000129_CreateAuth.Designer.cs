@@ -12,8 +12,8 @@ using Project_Manassas.Database;
 namespace Nash_Manassas.Migrations
 {
     [DbContext(typeof(ProjectContext))]
-    [Migration("20250927070842_InitialCreate3")]
-    partial class InitialCreate3
+    [Migration("20251211000129_CreateAuth")]
+    partial class CreateAuth
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -93,46 +93,56 @@ namespace Nash_Manassas.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasAnnotation("Relational:JsonPropertyName", "id");
 
                     b.Property<string>("Contractor")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasAnnotation("Relational:JsonPropertyName", "contractor");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasAnnotation("Relational:JsonPropertyName", "createdAt");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasAnnotation("Relational:JsonPropertyName", "description");
 
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasAnnotation("Relational:JsonPropertyName", "location");
 
                     b.Property<decimal>("ProjectEstimate")
                         .HasMaxLength(50)
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasAnnotation("Relational:JsonPropertyName", "projectEstimate");
 
                     b.Property<string>("ProjectManager")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasAnnotation("Relational:JsonPropertyName", "projectManager");
 
                     b.Property<string>("ProjectName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasAnnotation("Relational:JsonPropertyName", "projectName");
 
                     b.Property<string>("ProjectNumber")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasAnnotation("Relational:JsonPropertyName", "projectNumber");
 
                     b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasAnnotation("Relational:JsonPropertyName", "userId");
 
                     b.HasKey("Id");
 
@@ -151,12 +161,27 @@ namespace Nash_Manassas.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("EmailVerificationToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EmailVerificationTokenExpiration")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool?>("IsAdmin")
                         .HasColumnType("boolean");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiration")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserName")
                         .IsRequired()

@@ -101,7 +101,7 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 builder.Services.AddControllersWithViews();
 
 // Setting up Neon database
-var neonAPIKey = Environment.GetEnvironmentVariable("NEON_API_KEY");
+var neonAPIKey = Environment.GetEnvironmentVariable("NEON_API_KEY2");
 
 builder.Services.AddDbContext<ProjectContext>(options =>
 {
@@ -162,6 +162,9 @@ builder.Services.AddHttpClient<ProjectApiClients>(client =>
 });
 
 builder.Services.AddScoped<RpcController>();
+
+// ADD SendGrid Service
+builder.Services.AddScoped<IEmailSenderService, SendGridEmailService>();
 
 // Alternative from using extension method to add service scope
  //builder.Services.AddScoped<IProjectService, ProjectService>();

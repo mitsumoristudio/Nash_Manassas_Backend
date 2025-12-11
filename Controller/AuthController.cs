@@ -21,9 +21,9 @@ public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly ProjectContext _dbContext;
-    private readonly SendGridEmailService _emailSenderService;
+    private readonly IEmailSenderService _emailSenderService;
 
-    public AuthController(IUserService userService, ProjectContext dbContext, SendGridEmailService emailSenderService)
+    public AuthController(IUserService userService, ProjectContext dbContext, IEmailSenderService emailSenderService)
     {
         _userService = userService;
         _dbContext = dbContext;
@@ -40,6 +40,18 @@ public class AuthController : ControllerBase
         
         return Ok(create);
     }
+    
+    // POST/ api/users/registerEmail
+    [HttpPost(ApiEndPoints.Users.REGISTER_URL_USER_W_EMAIL)]
+    public async Task<ActionResult<UserEntity>> RegisterEmailUser([FromBody] CreateUserRequest user)
+    {
+        var createUser = await _userService.RegisterEmailUser(user);
+        
+        if (createUser == null) return BadRequest("Email is already in use.");
+        
+        return Ok(createUser);
+    }
+    
     
     // POST/ api/users/{id}
     [Authorize]

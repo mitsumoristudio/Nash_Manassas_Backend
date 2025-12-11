@@ -9,8 +9,6 @@ public static class ApplicationServiceCollection
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IEquipmentService, EquipmentService>();
-        services.AddScoped<IEmailSenderService, SendGridEmailService>();
-        
         
         return services;
     }

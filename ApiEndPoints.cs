@@ -52,6 +52,9 @@ public class ApiEndPoints
         public const string UPDATE_URL_USER_CONSTANT = $"{{id:guid}}";
         
         public const string LOGOUT_URL_USER_CONSTANT = $"logout";
+        
+        public const string? REGISTER_URL_USER_W_EMAIL = $"registerEmail";
+        
     }
 
     public static class MCP

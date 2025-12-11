@@ -12,7 +12,7 @@ using Project_Manassas.Database;
 namespace Nash_Manassas.Migrations
 {
     [DbContext(typeof(ProjectContext))]
-    [Migration("20250920170906_InitialCreate")]
+    [Migration("20251210235404_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -89,85 +89,62 @@ namespace Nash_Manassas.Migrations
                     b.ToTable("Equipment", (string)null);
                 });
 
-            modelBuilder.Entity("Project_Manassas.Model.ImageFileEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UploadedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ImageFile", (string)null);
-                });
-
             modelBuilder.Entity("Project_Manassas.Model.ProjectEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasAnnotation("Relational:JsonPropertyName", "id");
 
                     b.Property<string>("Contractor")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasAnnotation("Relational:JsonPropertyName", "contractor");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasAnnotation("Relational:JsonPropertyName", "createdAt");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<int?>("ImageFileId")
-                        .HasColumnType("integer");
+                        .HasColumnType("character varying(200)")
+                        .HasAnnotation("Relational:JsonPropertyName", "description");
 
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasAnnotation("Relational:JsonPropertyName", "location");
 
                     b.Property<decimal>("ProjectEstimate")
                         .HasMaxLength(50)
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasAnnotation("Relational:JsonPropertyName", "projectEstimate");
 
                     b.Property<string>("ProjectManager")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasAnnotation("Relational:JsonPropertyName", "projectManager");
 
                     b.Property<string>("ProjectName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasAnnotation("Relational:JsonPropertyName", "projectName");
 
                     b.Property<string>("ProjectNumber")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasAnnotation("Relational:JsonPropertyName", "projectNumber");
 
                     b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasAnnotation("Relational:JsonPropertyName", "userId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ImageFileId");
 
                     b.HasIndex("UserId");
 
@@ -184,12 +161,27 @@ namespace Nash_Manassas.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("EmailVerificationToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EmailVerificationTokenExpiration")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool?>("IsAdmin")
                         .HasColumnType("boolean");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiration")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -217,22 +209,11 @@ namespace Nash_Manassas.Migrations
 
             modelBuilder.Entity("Project_Manassas.Model.ProjectEntity", b =>
                 {
-                    b.HasOne("Project_Manassas.Model.ImageFileEntity", "ImageFile")
-                        .WithMany("Projects")
-                        .HasForeignKey("ImageFileId");
-
                     b.HasOne("Project_Manassas.Model.UserEntity", "User")
                         .WithMany("Projects")
                         .HasForeignKey("UserId");
 
-                    b.Navigation("ImageFile");
-
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Project_Manassas.Model.ImageFileEntity", b =>
-                {
-                    b.Navigation("Projects");
                 });
 
             modelBuilder.Entity("Project_Manassas.Model.UserEntity", b =>

@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -13,22 +12,6 @@ namespace Nash_Manassas.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ImageFile",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FileName = table.Column<string>(type: "text", nullable: false),
-                    Url = table.Column<string>(type: "text", nullable: false),
-                    Data = table.Column<byte[]>(type: "bytea", nullable: false),
-                    UploadedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ImageFile", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
@@ -36,7 +19,12 @@ namespace Nash_Manassas.Migrations
                     UserName = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    IsAdmin = table.Column<bool>(type: "boolean", nullable: true)
+                    IsAdmin = table.Column<bool>(type: "boolean", nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    EmailVerificationToken = table.Column<string>(type: "text", nullable: true),
+                    EmailVerificationTokenExpiration = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    PasswordResetToken = table.Column<string>(type: "text", nullable: true),
+                    PasswordResetTokenExpiration = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -56,17 +44,11 @@ namespace Nash_Manassas.Migrations
                     ProjectEstimate = table.Column<decimal>(type: "numeric", maxLength: 50, nullable: false),
                     ProjectManager = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ImageFileId = table.Column<int>(type: "integer", nullable: true),
                     UserId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Project", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Project_ImageFile_ImageFileId",
-                        column: x => x.ImageFileId,
-                        principalTable: "ImageFile",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Project_User_UserId",
                         column: x => x.UserId,
@@ -118,11 +100,6 @@ namespace Nash_Manassas.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Project_ImageFileId",
-                table: "Project",
-                column: "ImageFileId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Project_UserId",
                 table: "Project",
                 column: "UserId");
@@ -136,9 +113,6 @@ namespace Nash_Manassas.Migrations
 
             migrationBuilder.DropTable(
                 name: "Project");
-
-            migrationBuilder.DropTable(
-                name: "ImageFile");
 
             migrationBuilder.DropTable(
                 name: "User");

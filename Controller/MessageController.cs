@@ -45,7 +45,7 @@ public class MessageController: ControllerBase
             <p>{contactRequest.Message}</p>";
 
         await _emailSenderService.SendEmailAsync(
-            "admin@morisolution.org",
+            "runprospectpark@gmail.com",
             "New Contact Form Message",
             body
         );

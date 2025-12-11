@@ -18,4 +18,6 @@ public interface IUserService
     
     Task<RegistrationResponse?> RegisterAsyncUser(CreateUserRequest userCreate);
 
+    Task<RegistrationResponse?> RegisterEmailUser(CreateUserRequest create);
+
 }
