@@ -10,6 +10,8 @@ public class ProjectContext(DbContextOptions<ProjectContext> options): DbContext
     
     public DbSet<EquipmentEntity> Equipments => Set<EquipmentEntity>();
     
+    public DbSet<VerificationCode> VerificationCodes => Set<VerificationCode>();
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -17,6 +19,11 @@ public class ProjectContext(DbContextOptions<ProjectContext> options): DbContext
         modelBuilder.Entity<ProjectEntity>(entity =>
         {
             entity.ToTable("Project");
+            entity.HasKey(e => e.Id);
+        });
+        modelBuilder.Entity<VerificationCode>(entity =>
+        {
+            entity.ToTable("VerificationCodes");
             entity.HasKey(e => e.Id);
         });
 

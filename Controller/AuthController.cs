@@ -22,12 +22,14 @@ public class AuthController : ControllerBase
     private readonly IUserService _userService;
     private readonly ProjectContext _dbContext;
     private readonly IEmailSenderService _emailSenderService;
+    private readonly IEmailVerificationService _emailVerificationService;
 
-    public AuthController(IUserService userService, ProjectContext dbContext, IEmailSenderService emailSenderService)
+    public AuthController(IUserService userService, ProjectContext dbContext, IEmailSenderService emailSenderService, IEmailVerificationService emailVerificationService)
     {
         _userService = userService;
         _dbContext = dbContext;
         _emailSenderService = emailSenderService;
+        _emailVerificationService = emailVerificationService;
     }
     
     // POST/ api/users/register
@@ -49,7 +51,11 @@ public class AuthController : ControllerBase
         
         if (createUser == null) return BadRequest("Email is already in use.");
         
-        return Ok(createUser);
+        // Send verification code
+        await _emailVerificationService.SendVerificationCode(user.Email);
+        
+        return Ok(new { message = "User created successfully. Verification email has been sent." });
+        //return Ok(createUser);
     }
     
     
@@ -118,24 +124,40 @@ public class AuthController : ControllerBase
     
     // POST /api/users/verify-email
     [HttpPost("verifyEmail")]
-    public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+    public async Task<IActionResult> VerifyEmailAsync(VerifyEmailRequest request)
     {
-        var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.EmailVerificationToken == token);
-
-        if (user == null || user.EmailVerificationTokenExpiration < DateTime.UtcNow)
-        {
-            return BadRequest("Invaid or Expired Token");
-        }
-
+        var isValid = await _emailVerificationService.VerifyCodeAsync(request.Email, request.Code);
+        
+        if (!isValid) return BadRequest("Invalid or expired code.");
+        
+        var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
         user.EmailConfirmed = true;
-        user.EmailVerificationToken = null;
-        user.EmailVerificationTokenExpiration = null;
         
         await _dbContext.SaveChangesAsync();
-        return Ok("Email verified successfully");
+        
+        return Ok(new {message = "Email verified successfully. Verification email has been sent." });
     }
     
+    // public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+    // {
+    //     
+    //     var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.EmailVerificationToken == token);
+    //
+    //     if (user == null || user.EmailVerificationTokenExpiration < DateTime.UtcNow)
+    //     {
+    //         return BadRequest("Invaid or Expired Token");
+    //     }
+    //
+    //     user.EmailConfirmed = true;
+    //     user.EmailVerificationToken = null;
+    //     user.EmailVerificationTokenExpiration = null;
+    //     
+    //     await _dbContext.SaveChangesAsync();
+    //     return Ok("Email verified successfully");
+    // }
+    
     // POST /api/users/forgotPassword
+    
     [HttpPost("forgotPassword")]
     public async Task<IActionResult> ForgotPassword([FromBody] string email)
     {
@@ -158,6 +180,13 @@ public class AuthController : ControllerBase
         return Ok("Password reset email sent");
     }
     
+    // Resend Code
+    [HttpPost("resendCode")]
+    public async Task<IActionResult> ResendCode([FromQuery] string email)
+    {
+        await _emailVerificationService.SendVerificationCode(email);
+        return Ok(new {message = "Verification code was resent."});
+    }
     
     // POST /api/users/resetPassword
     [HttpPost("resetPassword")]
