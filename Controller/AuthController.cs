@@ -140,46 +140,30 @@ public class AuthController : ControllerBase
         return Ok(new {message = "Email verified successfully. Verification email has been sent." });
     }
     
-    // public async Task<IActionResult> VerifyEmail([FromQuery] string token)
-    // {
-    //     
-    //     var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.EmailVerificationToken == token);
-    //
-    //     if (user == null || user.EmailVerificationTokenExpiration < DateTime.UtcNow)
-    //     {
-    //         return BadRequest("Invaid or Expired Token");
-    //     }
-    //
-    //     user.EmailConfirmed = true;
-    //     user.EmailVerificationToken = null;
-    //     user.EmailVerificationTokenExpiration = null;
-    //     
-    //     await _dbContext.SaveChangesAsync();
-    //     return Ok("Email verified successfully");
-    // }
-    
-    // POST /api/users/forgotPassword
-    
     [HttpPost("forgotPassword")]
-    public async Task<IActionResult> ForgotPassword([FromBody] string email)
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
     {
-        var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
+        
+        var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
+        
         if (user == null) return BadRequest("User was not found.");
         
+        // Create Reset Token
         user.PasswordResetToken = Guid.NewGuid().ToString();
         user.PasswordResetTokenExpiration = DateTime.UtcNow.AddMinutes(30);
         
         await _dbContext.SaveChangesAsync();
         
-        var resetUrl =  $"https://morisolution.org/resetPassword?token={user.PasswordResetToken}";
+       // var resetUrl =  $"https://morisolution.org/resetPassword?token={user.PasswordResetToken}";
+        var resetUrl = $"http://localhost:3000/resetPassword?token={user.PasswordResetToken}";
         
         await _emailSenderService.SendEmailAsync(
-            email,
+            request.Email,
             "Reset Your Password",
-            $"Click here to reset your password: <a href='{resetUrl}'>Reset Password</a>"
+            BuildEmailTempplate(verifyUrl:resetUrl)
         );
         
-        return Ok("Password reset email sent");
+        return Ok(new {message = "Your password reset email was sent"});
     }
     
     // Resend Code
@@ -192,21 +176,119 @@ public class AuthController : ControllerBase
     
     // POST /api/users/resetPassword
     [HttpPost("resetPassword")]
-    public async Task<IActionResult> ResetPasswordAsync(string token, string newPassword)
+    public async Task<IActionResult> ResetPasswordAsync(string token, NewPasswordRequest request)
     {
         var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.PasswordResetToken == token);
 
         if (user == null || user.PasswordResetTokenExpiration < DateTime.UtcNow)
         {
-            return BadRequest("Invaid or Expired Token");
+            return BadRequest("Invalid or Expired Token");
         }
         
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.newPassword);
         user.PasswordResetToken = null;
         user.PasswordResetTokenExpiration = null;
 
         await _dbContext.SaveChangesAsync();
         
-        return Ok("Successfully reset password");
+        return Ok(new {message = "Password reset was successful."});
     }
+
+    private string BuildEmailTempplate(string verifyUrl)
+    {
+        return $@"
+<!DOCTYPE html>
+<html lang=""en"" style=""margin:0;padding:0;background:#f5f6fa;"">
+<head>
+    <meta charset=""UTF-8"" />
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />
+    <title>Password Reset</title>
+</head>
+
+<body style=""margin:0;padding:0;background:#f5f6fa;font-family:Arial,Helvetica,sans-serif;"">
+
+    <table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""background:#f5f6fa;padding:40px 0;"">
+        <tr>
+            <td align=""center"">
+
+                <!-- Card container -->
+                <table width=""600"" cellpadding=""0"" cellspacing=""0"" 
+                       style=""background:#ffffff;border-radius:12px;overflow:hidden;
+                              box-shadow:0 4px 16px rgba(0,0,0,0.1);"">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style=""background:#4a6cf7;padding:24px;text-align:center;color:white;"">
+                            <h2 style=""margin:0;font-size:24px;font-weight:600;"">Password Reset Request</h2>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style=""padding:32px 30px;color:#333;font-size:16px;line-height:1.6;"">
+
+                            <p style=""margin:0 0 20px;"">
+                                Hello,
+                            </p>
+
+                            <p style=""margin:0 0 20px;"">
+                                We received a request to reset your password for your
+                                <strong>Mori Solution</strong> account.
+                            </p>
+
+                            <p style=""margin:0 0 30px;"">
+                                If you made this request, click the button below to set a new password.
+                            </p>
+
+                            <!-- Button -->
+                            <table cellpadding=""0"" cellspacing=""0"" style=""margin:0 auto 32px auto;"">
+                                <tr>
+                                    <td align=""center"" 
+                                        style=""background:#4a6cf7;color:white;padding:14px 28px;
+                                               border-radius:6px;text-decoration:none;"">
+                                        <a href=""{verifyUrl}"" 
+                                           style=""color:white;text-decoration:none;font-size:16px;font-weight:bold;"">
+                                            Reset Password
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style=""margin:0 0 20px;"">
+                                Or copy and paste this link into your browser:
+                            </p>
+
+                            <p style=""word-break:break-all;color:#4a6cf7;font-size:14px;margin-bottom:32px;"">
+                                {verifyUrl}
+                            </p>
+
+                            <p style=""margin:0 0 20px;"">
+                                This password reset link will expire in <strong>30 minutes</strong>.
+                            </p>
+
+                            <p style=""margin:0;"">
+                                If you did not request a password reset, you can safely ignore this email.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style=""background:#f0f2f5;padding:20px;text-align:center;color:#555;font-size:12px;"">
+                            <p style=""margin:0 0 5px;"">© {DateTime.UtcNow.Year.ToString()} Mori Solution. All rights reserved.</p>
+                            <p style=""margin:0;"">This is an automated message — please do not reply.</p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>";
+    }
+
+
 }
